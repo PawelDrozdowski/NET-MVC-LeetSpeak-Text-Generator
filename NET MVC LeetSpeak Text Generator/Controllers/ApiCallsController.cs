@@ -14,10 +14,12 @@ namespace NET_MVC_LeetSpeak_Text_Generator.Controllers
     public class ApiCallsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<ApiCallsController> _logger;
 
-        public ApiCallsController(ApplicationDbContext context)
+        public ApiCallsController(ApplicationDbContext context, ILogger<ApiCallsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: ApiCalls
@@ -39,6 +41,7 @@ namespace NET_MVC_LeetSpeak_Text_Generator.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,Request,Response")] ApiCall apiCall)
         {
+            _logger.LogInformation($"Api call for {apiCall.Request}");
             if (ModelState.IsValid)
             {
                 _context.Add(apiCall);
