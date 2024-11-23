@@ -6,6 +6,8 @@ using NET_MVC_LeetSpeak_Text_Generator.Data;
 using Serilog;
 using NET_MVC_LeetSpeak_Text_Generator.Controllers;
 using NET_MVC_LeetSpeak_Text_Generator.Models.DTO;
+using NET_MVC_LeetSpeak_Text_Generator.Contracts;
+using NET_MVC_LeetSpeak_Text_Generator.Managers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,12 +22,17 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
 
+builder.Services.AddScoped<ITranslator>(serviceProvider =>
+{
+    var translatorURL = builder.Configuration["TranslatorURL"];
+    return new Translator(translatorURL);
+});
+
 builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
-
 
 var app = builder.Build();
 

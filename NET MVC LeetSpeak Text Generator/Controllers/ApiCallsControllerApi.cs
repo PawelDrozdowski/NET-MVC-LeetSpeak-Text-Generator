@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using NET_MVC_LeetSpeak_Text_Generator.Contracts;
 using NET_MVC_LeetSpeak_Text_Generator.Data;
 using NET_MVC_LeetSpeak_Text_Generator.Helpers;
 using NET_MVC_LeetSpeak_Text_Generator.Models;
@@ -25,15 +26,14 @@ namespace NET_MVC_LeetSpeak_Text_Generator.Controllers
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ApiCallsController> _logger;
+        private readonly ITranslator _translator;
 
-        private static readonly HttpClient client = new HttpClient();
-        private readonly string _translatorURL = "https://api.funtranslations.com/translate/leetspeak.json";
-
-        public ApiCallsControllerApi(IMapper mapper, ApplicationDbContext context, ILogger<ApiCallsController> logger)
+        public ApiCallsControllerApi(IMapper mapper, ApplicationDbContext context, ILogger<ApiCallsController> logger, ITranslator translator)
         {
             _mapper = mapper;
             _context = context;
             _logger = logger;
+            _translator = translator;
         }
         // GET api/ApiCallsControllerApi
         [HttpGet]
@@ -54,12 +54,7 @@ namespace NET_MVC_LeetSpeak_Text_Generator.Controllers
             {
                 try
                 {
-                    string translatorReq = JSON.ToJSON(new TranslatorDtoRequest() { text = apiCallDto.Request });
-                    var requestContent = new StringContent(translatorReq, Encoding.UTF8, "application/json");
-                    var responseMsg = await client.PostAsync(_translatorURL, requestContent);
-                    var responseContent = await responseMsg.Content.ReadAsStringAsync();
-                    var response = JSON.FromJSON<TranslatorDtoResponse>(responseContent);
-
+                    TranslatorDtoResponse response = await _translator.TranslateText(apiCallDto.Request);
                     apiCall.Response = response.contents.translated;
                 }
                 catch (Exception ex)
@@ -67,7 +62,6 @@ namespace NET_MVC_LeetSpeak_Text_Generator.Controllers
                     _logger.LogInformation($"Api call failure {apiCallDto.Request}, {ex.Message}");
                     return Problem("API Error");
                 }
-
 
                 _context.Add(apiCall);
                 await _context.SaveChangesAsync();
