@@ -1,0 +1,33 @@
+﻿@model IEnumerable<NET_MVC_LeetSpeak_Text_Generator.Models.ApiCall>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Previous api call made by all users</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Request)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Response)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Request)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Response)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
