@@ -1,33 +1,67 @@
 ﻿@model IEnumerable<NET_MVC_LeetSpeak_Text_Generator.Models.ApiCall>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "History";
 }
+
+<link rel="stylesheet" href="~/DataTables/datatables.min.css" />
+<script src="~/js/jQuery.js"></script>
+<script src="~/DataTables/datatables.min.js"></script>
+
 
 <h1>Previous api call made by all users</h1>
 
-<table class="table">
+<table class="table" id="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ID)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Request)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Response)
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Request)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Response)
-            </td>
-        </tr>
-}
     </tbody>
 </table>
+
+<script>
+    //new DataTable('#table');
+    $("#table").DataTable({
+        fixedColumns: true,
+        columnDefs: [
+            {
+                targets: [1,2],
+                orderable: false
+            },
+            {
+                targets: [0],
+                width: 50,
+                orderable: true
+            },
+        ],
+        ajax: {
+            url: "/api/ApiCallsControllerApi",
+            dataSrc: ""
+        },
+        columns: [
+            {
+                data: "id"
+            },
+            {
+                data: "request"
+            },
+            {
+                data: "response",
+                render: function (data) {
+                    return data == "" ? "API ERROR" : data;
+                }
+            }
+        ]
+
+    });
+</script>

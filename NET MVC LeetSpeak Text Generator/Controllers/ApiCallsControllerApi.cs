@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using NET_MVC_LeetSpeak_Text_Generator.Data;
 using NET_MVC_LeetSpeak_Text_Generator.Helpers;
@@ -32,6 +34,14 @@ namespace NET_MVC_LeetSpeak_Text_Generator.Controllers
             _mapper = mapper;
             _context = context;
             _logger = logger;
+        }
+        // GET api/ApiCallsControllerApi
+        [HttpGet]
+        public async Task<ActionResult> Get()
+        {
+            if(User.Identity.IsAuthenticated)
+                return Ok(await _context.ApiCalls.ToListAsync());
+            return Unauthorized();
         }
 
         // POST api/ApiCallsControllerApi
