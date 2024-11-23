@@ -41,23 +41,6 @@ namespace NET_MVC_LeetSpeak_Text_Generator.Controllers
             return View();
         }
 
-        // POST: ApiCalls/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ApiCallDtoCreate apiCallDto)
-        {
-            _logger.LogInformation($"Api call for {apiCallDto.Request}");
-
-            var apiCall = _mapper.Map<ApiCall>(apiCallDto);
-            if (ModelState.IsValid)
-            {
-                _context.Add(apiCall);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Create));
-            }
-            return View(apiCall);
-        }
-
 
         private bool ApiCallExists(int id)
         {

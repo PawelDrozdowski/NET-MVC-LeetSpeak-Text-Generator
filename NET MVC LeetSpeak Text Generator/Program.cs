@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using NET_MVC_LeetSpeak_Text_Generator.Configurations;
 using NET_MVC_LeetSpeak_Text_Generator.Data;
 using Serilog;
+using NET_MVC_LeetSpeak_Text_Generator.Controllers;
+using NET_MVC_LeetSpeak_Text_Generator.Models.DTO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,10 @@ builder.Services.AddAutoMapper(typeof(AutoMapperConfig));
 
 builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 
@@ -34,6 +40,12 @@ else
     app.UseHsts();
 }
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+};
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -47,5 +59,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=ApiCalls}/{action=Create}");
 app.MapRazorPages();
+
+//app.MapApiCallEndpoints();
 
 app.Run();

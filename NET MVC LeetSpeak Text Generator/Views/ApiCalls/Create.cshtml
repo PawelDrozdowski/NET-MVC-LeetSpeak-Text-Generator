@@ -9,7 +9,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form id="form">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Request" class="control-label"></label>
@@ -17,9 +17,8 @@
                 <span asp-validation-for="Request" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Response" class="control-label"></label>
-                <input asp-for="Response" class="form-control" />
-                <span asp-validation-for="Response" class="text-danger"></span>
+                <label for="translated" class="control-label">Translated</label>
+                <input type="text" id="translated" name="translated" class="form-control"  disabled><br><br>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -28,6 +27,35 @@
     </div>
 </div>
 
+<script src="~/js/jQuery.js"></script>
+<script>
+    $('#form').submit(function (event) {
+        event.preventDefault();
+
+        let $form = $(this),
+            toTranslateInput = $form.find("input[name='Request']");
+            request = toTranslateInput.val(),
+            url = "/api/ApiCallsControllerApi";
+
+        if (!$("#form").valid())
+            return;
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ request: request }),
+            success: function (data) {
+                console.log(data);
+                $("#translated").val(data);
+                toTranslateInput.val("")
+            },
+            error: function () {
+                $("#translated").val("ERROR");
+            }
+        });
+    });
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
